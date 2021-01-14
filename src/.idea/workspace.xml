@@ -21,11 +21,7 @@
       <change afterPath="$PROJECT_DIR$/main/java/home/todo_list/security/services/UserDetailsServiceImpl.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/main/java/home/todo_list/services/TodoTaskService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/org/im/quotes/QuotesApiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/java/home/todo_list/TodoListApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/org/im/quotes/controller/QuotesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/java/home/todo_list/controller/TodoTasksController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/org/im/quotes/model/QuotesModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/main/java/home/todo_list/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/java/org/im/quotes/repository/QuotesRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/main/resources/application.properties" afterDir="false" />
+     <change beforePath="$PROJECT_DIR$/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
