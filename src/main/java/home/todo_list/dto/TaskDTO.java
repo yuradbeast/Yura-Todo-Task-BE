@@ -1,9 +1,7 @@
 package home.todo_list.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import home.todo_list.model.TodoTask;
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
 

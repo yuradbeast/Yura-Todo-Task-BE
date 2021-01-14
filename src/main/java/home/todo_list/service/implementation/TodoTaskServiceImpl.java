@@ -1,21 +1,24 @@
-package home.todo_list.services;
+package home.todo_list.service.implementation;
 
 
 import home.todo_list.dto.TaskDTO;
 import home.todo_list.model.TodoTask;
 import home.todo_list.repository.TodoTaskRepository;
+import home.todo_list.service.TodoTaskService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TodoTaskService {
+public class TodoTaskServiceImpl implements TodoTaskService {
 
     final TodoTaskRepository todoTaskRepository;
 
-    public TodoTaskService(TodoTaskRepository todoTaskRepository) {
+    public TodoTaskServiceImpl(TodoTaskRepository todoTaskRepository) {
         this.todoTaskRepository = todoTaskRepository;
     }
 
@@ -65,7 +68,7 @@ public class TodoTaskService {
                 .build();
 
         if (todoTaskToPersist.equals(todoTaskFromDB)) {
-            throw new RuntimeException("No changes for modification found");
+            return taskDTO;
         }
 
         TodoTask createdTask = todoTaskRepository.save(todoTaskToPersist);
@@ -76,7 +79,7 @@ public class TodoTaskService {
     private TodoTask getTaskIfItBelongToUserOrThrowException(String taskId, String username) {
         Optional<TodoTask> todoTaskOptional = todoTaskRepository.findById(taskId);
         if (!todoTaskOptional.isPresent() || !todoTaskOptional.get().getUsername().equals(username)) {
-            throw new RuntimeException("Task was not found or does not belong to you");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task was not found or does not belong to you");
         }
         return todoTaskOptional.get();
     }

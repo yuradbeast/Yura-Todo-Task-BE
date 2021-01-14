@@ -4,14 +4,14 @@ package home.todo_list.controller;
 import home.todo_list.model.ERole;
 import home.todo_list.model.Role;
 import home.todo_list.model.User;
-import home.todo_list.payload.request.LoginRequest;
-import home.todo_list.payload.request.SignupRequest;
-import home.todo_list.payload.response.JwtResponse;
-import home.todo_list.payload.response.MessageResponse;
+import home.todo_list.dto.payload.request.LoginRequest;
+import home.todo_list.dto.payload.request.SignupRequest;
+import home.todo_list.dto.payload.response.JwtResponse;
+import home.todo_list.dto.payload.response.MessageResponse;
 import home.todo_list.repository.RoleRepository;
 import home.todo_list.repository.UserRepository;
-import home.todo_list.security.jwt.JwtUtils;
-import home.todo_list.services.security.UserDetailsImpl;
+import home.todo_list.jwt.JwtUtils;
+import home.todo_list.service.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,65 +31,69 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-	final AuthenticationManager authenticationManager;
+    final AuthenticationManager authenticationManager;
 
-	final UserRepository userRepository;
+    final UserRepository userRepository;
 
-	final RoleRepository roleRepository;
+    final RoleRepository roleRepository;
 
-	final PasswordEncoder encoder;
+    final PasswordEncoder encoder;
 
-	final JwtUtils jwtUtils;
+    final JwtUtils jwtUtils;
 
-	public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
-		this.authenticationManager = authenticationManager;
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.encoder = encoder;
-		this.jwtUtils = jwtUtils;
-	}
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.encoder = encoder;
+        this.jwtUtils = jwtUtils;
+    }
 
-	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-		
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toList());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-		return ResponseEntity.ok(new JwtResponse(jwt,
-												 userDetails.getId(), 
-												 userDetails.getUsername(), 
-												 roles));
-	}
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
-		}
+        return ResponseEntity.ok(
+                JwtResponse.builder()
+                        .accessToken(jwt)
+                        .id(userDetails.getId())
+                        .username(userDetails.getUsername())
+                        .roles(roles)
+                        .build());
+    }
 
-		User user = new User(signUpRequest.getUsername(),
-							 encoder.encode(signUpRequest.getPassword()));
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Username is already taken!"));
+        }
 
-		Set<Role> roles = new HashSet<>();
+        User user = User
+                .builder()
+                .username(signUpRequest.getUsername())
+                .password(encoder.encode(signUpRequest.getPassword()))
+                .build();
 
-			Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(userRole);
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+        user.setRoles(roles);
 
+        userRepository.save(user);
 
-		user.setRoles(roles);
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
 }

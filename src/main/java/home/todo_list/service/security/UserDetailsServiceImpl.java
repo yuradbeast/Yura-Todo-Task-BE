@@ -1,4 +1,4 @@
-package home.todo_list.services.security;
+package home.todo_list.service.security;
 
 
 import home.todo_list.model.User;

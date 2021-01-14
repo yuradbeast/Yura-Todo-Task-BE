@@ -11,9 +11,6 @@ public interface TodoTaskRepository extends MongoRepository<TodoTask,String> {
 
     List<TodoTask> findAllByUsername(String username);
 
-
     Long deleteAllByUsername(String username);
-//
-//    List<Todo> findByQuoteContainsAllIgnoreCase(String author);
 
 }

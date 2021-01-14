@@ -1,9 +1,9 @@
-package home.todo_list.security.configs;
+package home.todo_list.config;
 
 
-import home.todo_list.security.jwt.AuthEntryPointJwt;
-import home.todo_list.security.jwt.AuthTokenFilter;
-import home.todo_list.services.security.UserDetailsServiceImpl;
+import home.todo_list.jwt.AuthEntryPointJwt;
+import home.todo_list.jwt.AuthTokenFilter;
+import home.todo_list.service.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,10 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-		// securedEnabled = true,
-		// jsr250Enabled = true,
-		prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	final UserDetailsServiceImpl userDetailsService;
 

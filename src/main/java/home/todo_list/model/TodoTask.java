@@ -11,7 +11,8 @@ import java.time.Instant;
 
 
 @Builder
-@Setter @Getter
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Repository
